@@ -1,7 +1,7 @@
 name: roguelike
 version: 0.0.1
-description: |
-  An absolute bare-bones web app.
+author: bucho
+description: roguelike in dart
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
