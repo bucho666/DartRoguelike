@@ -3,13 +3,14 @@ library canvas_screen;
 import 'dart:html';
 
 class CanvasScreen {
-  CanvasRenderingContext2D _context;
+  final CanvasRenderingContext2D _context;
   final Font _font;
-  Size _size;
-  String _background_color;
-  CanvasScreen(CanvasElement canvas, Size size, this._font, this._background_color) {
-    _context = canvas.context2D;
-    _size = new Size(Grid.width * size.width, Grid.height * size.height);
+  final Size _size;
+  final String _backgroundColor;
+
+  CanvasScreen(CanvasElement canvas, Size size, this._font, this._backgroundColor)
+      : _context = canvas.context2D,
+        _size = new Size(Grid.width * size.width, Grid.height * size.height) {
     canvas
         ..width = _size.width
         ..height = _size.height;
@@ -17,7 +18,7 @@ class CanvasScreen {
 
   void clear() {
     _context
-        ..fillStyle = _background_color
+        ..fillStyle = _backgroundColor
         ..fillRect(0, 0, _size.width, _size.height);
   }
 
@@ -34,10 +35,9 @@ class CanvasScreen {
 }
 
 class Coordinate {
-  int _x;
-  int _y;
-  Coordinate(this._x, this._y);
-
+  final int _x;
+  final int _y;
+  const Coordinate(this._x, this._y);
   int get x => _x;
   int get y => _y;
 
@@ -47,29 +47,30 @@ class Coordinate {
 }
 
 class Direction {
-  static final Coordinate N = new Coordinate(0, -1);
-  static final Coordinate S = new Coordinate(0, 1);
-  static final Coordinate E = new Coordinate(1, 0);
-  static final Coordinate W = new Coordinate(-1, 0);
-  static final Coordinate NE = new Coordinate(1, -1);
-  static final Coordinate NW = new Coordinate(-1, -1);
-  static final Coordinate SE = new Coordinate(1, 1);
-  static final Coordinate SW = new Coordinate(-1, 1);
+  static const Coordinate N = const Coordinate(0, -1);
+  static const Coordinate S = const Coordinate(0, 1);
+  static const Coordinate E = const Coordinate(1, 0);
+  static const Coordinate W = const Coordinate(-1, 0);
+  static const Coordinate NE = const Coordinate(1, -1);
+  static const Coordinate NW = const Coordinate(-1, -1);
+  static const Coordinate SE = const Coordinate(1, 1);
+  static const Coordinate SW = const Coordinate(-1, 1);
 }
 
 class Font {
   final String family;
-  Font(this.family);
+  const Font(this.family);
 }
 
 class Grid extends Coordinate {
   static Size _size;
   static get height => _size.height;
-  static set size(Size size) => _size = size;
   static get width => _size.width;
-  Grid(int x, int y) : super(x, y);
+  static set size(Size size) => _size = size;
+  const Grid(int x, int y) : super(x, y);
   int get x => _x * _size.width;
   int get y => _y * _size.height;
+
   Grid operator +(Coordinate other) {
     return new Grid(_x + other._x, _y + other._y);
   }
@@ -78,5 +79,5 @@ class Grid extends Coordinate {
 class Size {
   final int width;
   final int height;
-  Size(this.width, this.height);
+  const Size(this.width, this.height);
 }
