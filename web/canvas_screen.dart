@@ -2,6 +2,7 @@ library canvas_screen;
 
 import 'dart:html';
 
+/// HTML5のキャンバスを操作するクラス
 class CanvasScreen {
   final CanvasRenderingContext2D _context;
   final Font _font;
@@ -34,6 +35,7 @@ class CanvasScreen {
   }
 }
 
+/// 座標クラス
 class Coordinate {
   final int _x;
   final int _y;
@@ -44,8 +46,11 @@ class Coordinate {
   Coordinate operator +(Coordinate other) {
     return new Coordinate(_x + other._x, _y + other._y);
   }
+
+  String toString() => "${_x}, ${_y}";
 }
 
+/// 方向の定数クラス
 class Direction {
   static const Coordinate N = const Coordinate(0, -1);
   static const Coordinate S = const Coordinate(0, 1);
@@ -57,6 +62,7 @@ class Direction {
   static const Coordinate SW = const Coordinate(-1, 1);
 }
 
+/// フォントクラス
 class Font {
   final String family;
   const Font(this.family);
@@ -68,6 +74,7 @@ class Grid extends Coordinate {
   static get width => _size.width;
   static set size(Size size) => _size = size;
   const Grid(int x, int y) : super(x, y);
+  Grid.asCoordinate(Coordinate c) : super(c.x, c.y);
   int get x => _x * _size.width;
   int get y => _y * _size.height;
 
@@ -77,7 +84,7 @@ class Grid extends Coordinate {
 }
 
 class Size {
-  final int width;
-  final int height;
+  final int width, height;
   const Size(this.width, this.height);
 }
+
