@@ -3,6 +3,7 @@ library stage;
 import 'canvas_screen.dart';
 import 'plane.dart';
 
+/// アクター(ゲームキャラクター)
 class Actor extends Tile {
   Actor(String glyph, String color) : super(glyph, color);
 }
@@ -45,8 +46,8 @@ class Stage {
   static Stage _current_stage;
   static Stage get current_stage => _current_stage;
   static set current_stage(Stage new_stage) => _current_stage = new_stage;
-  Array2D _terrain;
-  Array2D _actor;
+  Array2D<Terrain> _terrain;
+  Array2D<Actor> _actor;
 
   Stage(Size size) {
     _terrain = new Array2D<Terrain>(size, const Terrain('.', 'silver'));
@@ -60,6 +61,10 @@ class Stage {
     return null;
   }
 
+  bool movable(Coordinate coordinate) {
+    return _terrain[coordinate].movable;
+  }
+
   Actor pickupActor(Coordinate coordinate) {
     Actor actor = _actor[coordinate];
     _actor[coordinate] = null;
@@ -71,7 +76,7 @@ class Stage {
   }
 
   void render(CanvasScreen screen) {
-    for (Coordinate coordinate in _current_stage._terrain.coordinates) {
+    for (Coordinate coordinate in _terrain.coordinates) {
       _current_stage.renderAt(screen, coordinate);
     }
   }
@@ -83,12 +88,35 @@ class Stage {
       _terrain[coordinate].render(screen, new Grid.asCoordinate(coordinate));
     }
   }
+
+  void setTerrain(String symbol, Coordinate coordinate) {
+    _terrain[coordinate] = TerrainDB.get(symbol);
+  }
 }
 
+/// 地形タイル
 class Terrain extends Tile {
-  const Terrain(String glyph, String color) : super(glyph, color);
+  static const int MOVABLE = 1;
+  final int _flags;
+
+  const Terrain(String glyph, String color)
+      : super(glyph, color),
+        _flags = MOVABLE;
+
+  const Terrain.Block(String glyph, String color)
+      : super(glyph, color),
+        _flags = 0;
+
+  bool get movable => _flags & MOVABLE != 0;
 }
 
+class TerrainDB {
+  static Terrain get(String symbol) {
+    return const Terrain.Block('#', 'Silver');
+  }
+}
+
+/// マップのタイル
 class Tile {
   final String _glyph;
   final String _color;

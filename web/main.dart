@@ -26,7 +26,7 @@ class Main {
   static CanvasScreen _build_screen() {
     Grid.size = new Size(10, 16);
     Size screen_size = new Size(80, 24);
-    Font font = new Font("22px 'courier new'");
+    Font font = new Font("21px 'courier new'");
     String backgroundColor = "black";
     CanvasScreen screen = new CanvasScreen(_build_canvas(), screen_size, font, backgroundColor);
     screen.initialize();
@@ -53,15 +53,19 @@ class WalkDemo implements Game {
       : _pos = new Grid(3, 3),
         _hero = new Actor('@', 'olive') {
     Stage.current_stage = new Stage(new Size(80, 20));
-    Stage.current_stage.putActor(_hero, const Coordinate(3, 3));
+    Stage.current_stage
+      ..putActor(_hero, const Coordinate(3, 3))
+      ..setTerrain('#', const Coordinate(4, 3));
   }
 
   void keyDown(int key) {
     if (_dirs.containsKey(key) == false) return;
     Coordinate current = Stage.current_stage.findActor(_hero);
-    Stage.current_stage.pickupActor(current);
-    current += _dirs[key];
-    Stage.current_stage.putActor(_hero, current);
+    Coordinate to = current + _dirs[key];
+    if (Stage.current_stage.movable(to) == false) return;
+    Stage.current_stage
+      ..pickupActor(current)
+      ..putActor(_hero, to);
     render();
   }
 
