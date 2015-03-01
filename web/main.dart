@@ -1,7 +1,8 @@
 import 'dart:html';
-import 'plane.dart';
+
 import 'canvas_screen.dart';
 import 'game_runner.dart';
+import 'plane.dart';
 import 'stage.dart';
 
 void main() {
@@ -16,6 +17,12 @@ class Main {
     runner.run();
   }
 
+  static CanvasElement _build_canvas() {
+    CanvasElement canvas = new CanvasElement();
+    document.body.children.add(canvas);
+    return canvas;
+  }
+
   static CanvasScreen _build_screen() {
     Grid.size = new Size(10, 16);
     Size screen_size = new Size(80, 24);
@@ -24,12 +31,6 @@ class Main {
     CanvasScreen screen = new CanvasScreen(_build_canvas(), screen_size, font, backgroundColor);
     screen.initialize();
     return screen;
-  }
-
-  static CanvasElement _build_canvas() {
-    CanvasElement canvas = new CanvasElement();
-    document.body.children.add(canvas);
-    return canvas;
   }
 }
 
@@ -46,17 +47,21 @@ class WalkDemo implements Game {
     KeyCode.N: Direction.SE,
   };
   Coordinate _pos;
+  Actor _hero;
   CanvasScreen _screen;
   WalkDemo(this._screen)
-    : _pos = new Grid(3, 3) {
+      : _pos = new Grid(3, 3),
+        _hero = new Actor('@', 'olive') {
     Stage.current_stage = new Stage(new Size(80, 20));
-    Actor hero = new Actor('@', 'olive');
-    Stage.current_stage.putActor(hero, const Coordinate(3, 3));
+    Stage.current_stage.putActor(_hero, const Coordinate(3, 3));
   }
 
   void keyDown(int key) {
     if (_dirs.containsKey(key) == false) return;
-    _pos += _dirs[key];
+    Coordinate current = Stage.current_stage.findActor(_hero);
+    Stage.current_stage.pickupActor(current);
+    current += _dirs[key];
+    Stage.current_stage.putActor(_hero, current);
     render();
   }
 

@@ -1,14 +1,18 @@
 library stage;
 
-import 'plane.dart';
 import 'canvas_screen.dart';
+import 'plane.dart';
+
+class Actor extends Tile {
+  Actor(String glyph, String color) : super(glyph, color);
+}
 
 /// 2次元配列
 class Array2D<T> {
   List<T> _elements;
   final Size size;
   /// コンストラクタ
-  Array2D(this.size, [T initial_value=null]) {
+  Array2D(this.size, [T initial_value = null]) {
     _elements = new List<T>.filled(size.height * size.width, initial_value);
   }
   /// 座標リスト
@@ -36,28 +40,11 @@ class Array2D<T> {
   int _index(Coordinate pos) => pos.y * size.width + pos.x;
 }
 
-class Tile {
-  final String _glyph;
-  final String _color;
-  const Tile(this._glyph, this._color);
-  void render(CanvasScreen screen, Coordinate coordinate) {
-    screen.write(this._glyph, this._color, coordinate);
-  }
-}
-
-class Actor extends Tile {
-  Actor(String glyph, String color) : super(glyph, color);
-}
-
-class Terrain extends Tile {
-  const Terrain(String glyph, String color) : super(glyph, color);
-}
-
 /// 各種マップ(地形、キャラクター等)のファサードクラス
 class Stage {
   static Stage _current_stage;
-  static set current_stage(Stage new_stage) => _current_stage = new_stage;
   static Stage get current_stage => _current_stage;
+  static set current_stage(Stage new_stage) => _current_stage = new_stage;
   Array2D _terrain;
   Array2D _actor;
 
@@ -66,8 +53,27 @@ class Stage {
     _actor = new Array2D<Actor>(size);
   }
 
+  Coordinate findActor(Actor actor) {
+    for (Coordinate current in _actor.coordinates) {
+      if (_actor[current] == actor) return current;
+    }
+    return null;
+  }
+
+  Actor pickupActor(Coordinate coordinate) {
+    Actor actor = _actor[coordinate];
+    _actor[coordinate] = null;
+    return actor;
+  }
+
   void putActor(Actor actor, Coordinate coordinate) {
     _actor[coordinate] = actor;
+  }
+
+  void render(CanvasScreen screen) {
+    for (Coordinate coordinate in _current_stage._terrain.coordinates) {
+      _current_stage.renderAt(screen, coordinate);
+    }
   }
 
   void renderAt(CanvasScreen screen, Coordinate coordinate) {
@@ -77,10 +83,17 @@ class Stage {
       _terrain[coordinate].render(screen, new Grid.asCoordinate(coordinate));
     }
   }
+}
 
-  void render(CanvasScreen screen) {
-    for (Coordinate coordinate in _current_stage._terrain.coordinates) {
-      _current_stage.renderAt(screen, coordinate);
-    }
+class Terrain extends Tile {
+  const Terrain(String glyph, String color) : super(glyph, color);
+}
+
+class Tile {
+  final String _glyph;
+  final String _color;
+  const Tile(this._glyph, this._color);
+  void render(CanvasScreen screen, Coordinate coordinate) {
+    screen.write(this._glyph, this._color, coordinate);
   }
 }
