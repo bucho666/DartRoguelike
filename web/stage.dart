@@ -33,8 +33,6 @@ class Array2D<T> {
   void operator []=(Coordinate pos, T value) {
     _elements[_index(pos)] = value;
   }
-  /// 指定値で埋める
-  void fill(T value) => _elements.fillRange(0, _elements.length, value);
   /// indexから座標を返す
   Coordinate _coordinate(int index) => new Coordinate(index % size.width, index ~/ size.width);
   /// 座標から、実際のindexを返す
@@ -50,7 +48,7 @@ class Stage {
   Array2D<Actor> _actor;
 
   Stage(Size size) {
-    _terrain = new Array2D<Terrain>(size, const Terrain('.', 'silver'));
+    _terrain = new Array2D<Terrain>(size, TerrainTable.get('.'));
     _actor = new Array2D<Actor>(size);
   }
 
@@ -90,7 +88,7 @@ class Stage {
   }
 
   void setTerrain(String symbol, Coordinate coordinate) {
-    _terrain[coordinate] = TerrainDB.get(symbol);
+    _terrain[coordinate] = TerrainTable.get(symbol);
   }
 }
 
@@ -110,9 +108,14 @@ class Terrain extends Tile {
   bool get movable => _flags & MOVABLE != 0;
 }
 
-class TerrainDB {
+/// 地形テーブル
+class TerrainTable {
+  static final Map<String, Terrain> _tabel = <String, Terrain> {
+    '#': const Terrain.Block('#', 'Silver'),
+    '.': const Terrain('.', 'Silver'),
+  };
   static Terrain get(String symbol) {
-    return const Terrain.Block('#', 'Silver');
+    return _tabel[symbol];
   }
 }
 
