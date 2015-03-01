@@ -34,8 +34,37 @@ class Main {
   }
 }
 
-/// WalkDemo
-class WalkDemo implements Game {
+/// シーンクラス
+abstract class Scene {
+  static Scene active_scene;
+  /// 入力処理
+  void keyDown(int key);
+  /// 描画処理
+  void render(CanvasScreen screen);
+}
+
+/// タイトルシーン
+class TitleScene implements Scene {
+  void keyDown(int key) {
+      if (KeyCode.SPACE != key) return;
+      Scene.active_scene = new MainScene();
+    }
+
+    void render(CanvasScreen screen) {
+      screen.clear();
+      int x = 28, y = 8;
+      String title_color = 'Yellow';
+      screen.write("  ********************", title_color, new Grid(x, y));
+      screen.write(" *                    *", title_color, new Grid(x, y + 1));
+      screen.write("*  The RogueLike Game  *", title_color, new Grid(x, y + 2));
+      screen.write(" *                    *", title_color, new Grid(x, y + 3));
+      screen.write("  ********************", title_color, new Grid(x, y + 4));
+      screen.write("   (Press Space Key)", 'Silver', new Grid(x, y + 6));
+    }
+}
+
+/// メインシーン
+class MainScene implements Scene {
   static final Map<int, Coordinate> _dirs = {
     KeyCode.H: Direction.W,
     KeyCode.J: Direction.S,
@@ -46,12 +75,12 @@ class WalkDemo implements Game {
     KeyCode.B: Direction.SW,
     KeyCode.N: Direction.SE,
   };
+
   Coordinate _pos;
   Actor _hero;
-  CanvasScreen _screen;
-  WalkDemo(this._screen)
-      : _pos = new Grid(3, 3),
-        _hero = new Actor('@', 'olive') {
+
+  MainScene()
+      : _hero = new Actor('@', 'olive') {
     Stage.current_stage = new Stage(new Size(80, 20));
     Stage.current_stage
       ..putActor(_hero, const Coordinate(3, 3))
@@ -66,11 +95,27 @@ class WalkDemo implements Game {
     Stage.current_stage
       ..pickupActor(current)
       ..putActor(_hero, to);
-    render();
+  }
+
+  void render(CanvasScreen screen) {
+    screen.clear();
+    Stage.current_stage.render(screen);
+  }
+}
+
+/// WalkDemo
+class WalkDemo implements Game {
+  CanvasScreen _screen;
+
+  WalkDemo(this._screen) {
+    Scene.active_scene = new TitleScene();
+  }
+
+  void keyDown(int key) {
+    Scene.active_scene.keyDown(key);
   }
 
   void render() {
-    _screen.clear();
-    Stage.current_stage.render(_screen);
+    Scene.active_scene.render(_screen);
   }
 }
