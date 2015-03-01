@@ -36,25 +36,51 @@ class Array2D<T> {
   int _index(Coordinate pos) => pos.y * size.width + pos.x;
 }
 
+class Tile {
+  final String _glyph;
+  final String _color;
+  const Tile(this._glyph, this._color);
+  void render(CanvasScreen screen, Coordinate coordinate) {
+    screen.write(this._glyph, this._color, coordinate);
+  }
+}
+
+class Actor extends Tile {
+  Actor(String glyph, String color) : super(glyph, color);
+}
+
+class Terrain extends Tile {
+  const Terrain(String glyph, String color) : super(glyph, color);
+}
+
 /// 各種マップ(地形、キャラクター等)のファサードクラス
 class Stage {
   static Stage _current_stage;
   static set current_stage(Stage new_stage) => _current_stage = new_stage;
+  static Stage get current_stage => _current_stage;
   Array2D _terrain;
   Array2D _actor;
 
   Stage(Size size) {
-    _terrain = new Array2D<String>(size, '.');
-    _actor = new Array2D<String>(size);
+    _terrain = new Array2D<Terrain>(size, const Terrain('.', 'silver'));
+    _actor = new Array2D<Actor>(size);
+  }
+
+  void putActor(Actor actor, Coordinate coordinate) {
+    _actor[coordinate] = actor;
   }
 
   void renderAt(CanvasScreen screen, Coordinate coordinate) {
-    screen.write(_terrain[coordinate], 'silver', new Grid.asCoordinate(coordinate));
+    if (_actor[coordinate] != null) {
+      _actor[coordinate].render(screen, new Grid.asCoordinate(coordinate));
+    } else {
+      _terrain[coordinate].render(screen, new Grid.asCoordinate(coordinate));
+    }
   }
 
-  static void render(CanvasScreen screen) {
-    for (Coordinate c in _current_stage._terrain.coordinates) {
-      _current_stage.renderAt(screen, c);
+  void render(CanvasScreen screen) {
+    for (Coordinate coordinate in _current_stage._terrain.coordinates) {
+      _current_stage.renderAt(screen, coordinate);
     }
   }
 }

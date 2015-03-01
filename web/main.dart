@@ -50,8 +50,9 @@ class WalkDemo implements Game {
   WalkDemo(this._screen)
     : _pos = new Grid(3, 3) {
     Stage.current_stage = new Stage(new Size(80, 20));
+    Actor hero = new Actor('@', 'olive');
+    Stage.current_stage.putActor(hero, const Coordinate(3, 3));
   }
-
 
   void keyDown(int key) {
     if (_dirs.containsKey(key) == false) return;
@@ -61,7 +62,6 @@ class WalkDemo implements Game {
 
   void render() {
     _screen.clear();
-    Stage.render(_screen);
-    _screen.write('@', 'olive', _pos);
+    Stage.current_stage.render(_screen);
   }
 }
