@@ -77,7 +77,7 @@ class MainScene implements Scene {
   };
 
   Coordinate _pos;
-  Actor _hero;
+  final Actor _hero;
 
   MainScene()
       : _hero = new Actor('@', 'olive') {
@@ -105,7 +105,7 @@ class MainScene implements Scene {
 
 /// WalkDemo
 class WalkDemo implements Game {
-  CanvasScreen _screen;
+  final CanvasScreen _screen;
 
   WalkDemo(this._screen) {
     Scene.active_scene = new TitleScene();

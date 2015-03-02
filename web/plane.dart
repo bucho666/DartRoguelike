@@ -2,8 +2,7 @@ library plane;
 
 /// 座標クラス
 class Coordinate {
-  final int _x;
-  final int _y;
+  final int _x, _y;
   const Coordinate(this._x, this._y);
   int get x => _x;
   int get y => _y;
@@ -29,8 +28,8 @@ class Direction {
 
 class Grid extends Coordinate {
   static Size _size;
-  static get height => _size.height;
   static set size(Size size) => _size = size;
+  static get height => _size.height;
   static get width => _size.width;
   const Grid(int x, int y) : super(x, y);
   Grid.asCoordinate(Coordinate c) : super(c.x, c.y);

@@ -10,12 +10,13 @@ class Actor extends Tile {
 
 /// 2次元配列
 class Array2D<T> {
-  List<T> _elements;
-  final Size size;
+  final List<T> _elements;
+  final Size _size;
   /// コンストラクタ
-  Array2D(this.size, [T initial_value = null]) {
-    _elements = new List<T>.filled(size.height * size.width, initial_value);
-  }
+  Array2D(Size size, [T initial_value = null])
+      : _size = size
+      , _elements = new List<T>.filled(size.height * size.width, initial_value);
+
   /// 座標リスト
   Iterable<Coordinate> get coordinates {
     int length = _elements.length;
@@ -34,9 +35,9 @@ class Array2D<T> {
     _elements[_index(pos)] = value;
   }
   /// indexから座標を返す
-  Coordinate _coordinate(int index) => new Coordinate(index % size.width, index ~/ size.width);
+  Coordinate _coordinate(int index) => new Coordinate(index % _size.width, index ~/ _size.width);
   /// 座標から、実際のindexを返す
-  int _index(Coordinate pos) => pos.y * size.width + pos.x;
+  int _index(Coordinate pos) => pos.y * _size.width + pos.x;
 }
 
 /// 各種マップ(地形、キャラクター等)のファサードクラス
@@ -44,13 +45,12 @@ class Stage {
   static Stage _current_stage;
   static Stage get current_stage => _current_stage;
   static set current_stage(Stage new_stage) => _current_stage = new_stage;
-  Array2D<Terrain> _terrain;
-  Array2D<Actor> _actor;
+  final Array2D<Terrain> _terrain;
+  final Array2D<Actor> _actor;
 
-  Stage(Size size) {
-    _terrain = new Array2D<Terrain>(size, TerrainTable.get('.'));
-    _actor = new Array2D<Actor>(size);
-  }
+  Stage(Size size)
+      : _terrain = new Array2D<Terrain>(size, TerrainTable.get('.'))
+      , _actor = new Array2D<Actor>(size);
 
   Coordinate findActor(Actor actor) {
     for (Coordinate current in _actor.coordinates) {
@@ -114,6 +114,7 @@ class TerrainTable {
     '#': const Terrain.Block('#', 'Silver'),
     '.': const Terrain('.', 'Silver'),
   };
+
   static Terrain get(String symbol) {
     return _tabel[symbol];
   }
@@ -121,8 +122,7 @@ class TerrainTable {
 
 /// マップのタイル
 class Tile {
-  final String _glyph;
-  final String _color;
+  final String _glyph, _color;
   const Tile(this._glyph, this._color);
   void render(CanvasScreen screen, Coordinate coordinate) {
     screen.write(this._glyph, this._color, coordinate);
