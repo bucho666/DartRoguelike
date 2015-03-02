@@ -73,23 +73,25 @@ class Stage {
     _actor[coordinate] = actor;
   }
 
-  void render(CanvasScreen screen) {
+  void render(CanvasScreen screen, Coordinate position) {
     for (Coordinate coordinate in _terrain.coordinates) {
-      _current_stage.renderAt(screen, coordinate);
+      _current_stage.renderAt(screen, coordinate, position + coordinate);
     }
   }
 
-  void renderAt(CanvasScreen screen, Coordinate coordinate) {
+  void renderAt(CanvasScreen screen, Coordinate coordinate, Coordinate position) {
     if (_actor[coordinate] != null) {
-      _actor[coordinate].render(screen, new Grid.asCoordinate(coordinate));
+      _actor[coordinate].render(screen, new Grid.asCoordinate(position));
     } else {
-      _terrain[coordinate].render(screen, new Grid.asCoordinate(coordinate));
+      _terrain[coordinate].render(screen, new Grid.asCoordinate(position));
     }
   }
 
   void setTerrain(String symbol, Coordinate coordinate) {
     _terrain[coordinate] = TerrainTable.get(symbol);
   }
+
+  List<Coordinate> get coordinates => _terrain.coordinates;
 }
 
 /// 地形タイル
