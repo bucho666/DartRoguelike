@@ -10,34 +10,33 @@ class Actor extends Tile {
 
 /// 2次元配列
 class Array2D<T> {
-  final List<T> _elements;
+  final List<List<T>> _elements;
   final Size _size;
   /// コンストラクタ
   Array2D(Size size, [T initial_value = null])
       : _size = size
-      , _elements = new List<T>.filled(size.height * size.width, initial_value);
+      , _elements = new List<List<T>>(size.height) {
+      for (int y = 0; y < size.height; y++) {
+        _elements[y] = new List<T>.filled(size.width, initial_value);
+      }
+  }
 
   /// 座標リスト
   Iterable<Coordinate> get coordinates {
-    int length = _elements.length;
-    final List<Coordinate> coordinats = new List<Coordinate>(length);
-    for (int index = 0; index < length; index++) {
-      coordinats[index] = _coordinate(index);
+    List<Coordinate> coordinates = new List<Coordinate>();
+    for (int y = 0; y < _elements.length; y++) {
+      for (int x = 0; x < _elements[y].length; x++)
+        coordinates.add(new Coordinate(x, y));
     }
-    return coordinats;
+    return coordinates;
   }
-  /// 値のイテレータ
-  Iterator<T> get iterator => _elements.iterator;
+
   /// 指定座標の値を取得
-  T operator [](Coordinate pos) => _elements[_index(pos)];
+  T operator [](Coordinate pos) => _elements[pos.y][pos.x];
   /// 指定座標に値を設定
   void operator []=(Coordinate pos, T value) {
-    _elements[_index(pos)] = value;
+    _elements[pos.y][pos.x] = value;
   }
-  /// indexから座標を返す
-  Coordinate _coordinate(int index) => new Coordinate(index % _size.width, index ~/ _size.width);
-  /// 座標から、実際のindexを返す
-  int _index(Coordinate pos) => pos.y * _size.width + pos.x;
 }
 
 /// 各種マップ(地形、キャラクター等)のファサードクラス

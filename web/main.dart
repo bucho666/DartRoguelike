@@ -93,7 +93,8 @@ class MainScene implements Scene {
     Stage.current_stage = buildMap(terrain_lines);
     Stage.current_stage.putActor(_hero, const Coordinate(3, 3));
   }
-  // TODO Loader
+  // TODO levels: 各階のマップ定義、構築
+  // TODO レベル移動処理(座標はそのままで、current_stageを変更する。
   Stage buildMap(List<String> terrain_lines) {
     Size stage_size = new Size(terrain_lines[0].length, terrain_lines.length);
     Stage stage = new Stage(stage_size);
