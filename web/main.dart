@@ -93,11 +93,6 @@ class MainScene implements Scene {
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
-  // TODO TileにonStandEventプロパティを追加
-  // TODO タイルにキャラクターが載った時に実行する。
-  // TODO イベントはまずは引数なしで。
-  // TODO デフォルトは何もしない。
-  // TODO とりあえずprintするイベントを作成
   // TODO 次にメッセージボードを作成
   // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
   // TODO はいの場合にレベル移動を実行
