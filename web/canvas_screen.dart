@@ -22,6 +22,7 @@ class CanvasScreen {
     _context
         ..fillStyle = _backgroundColor
         ..fillRect(0, 0, _size.width, _size.height);
+
   }
 
   void initialize() {

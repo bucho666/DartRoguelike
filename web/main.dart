@@ -24,11 +24,11 @@ class Main {
   }
 
   static CanvasScreen _build_screen() {
-    Grid.size = new Size(10, 16);
-    Size screen_size = new Size(80, 24);
-    Font font = new Font("18px 'courier new'");
+    Grid.size = new Size(10, 20);
+    Size screenSize = new Size(80, 24);
+    Font font = new Font("20px 'Courier New'");
     String backgroundColor = "black";
-    CanvasScreen screen = new CanvasScreen(_build_canvas(), screen_size, font, backgroundColor);
+    CanvasScreen screen = new CanvasScreen(_build_canvas(), screenSize, font, backgroundColor);
     screen.initialize();
     return screen;
   }
@@ -53,12 +53,12 @@ class TitleScene implements Scene {
   void render(CanvasScreen screen) {
     screen.clear();
     int x = 28, y = 8;
-    String title_color = 'Yellow';
-    screen.write("  ********************", title_color, new Grid(x, y));
-    screen.write(" *                    *", title_color, new Grid(x, y + 1));
-    screen.write("*  The RogueLike Game  *", title_color, new Grid(x, y + 2));
-    screen.write(" *                    *", title_color, new Grid(x, y + 3));
-    screen.write("  ********************", title_color, new Grid(x, y + 4));
+    String titleColor = 'Yellow';
+    screen.write("  ********************", titleColor, new Grid(x, y));
+    screen.write(" *                    *", titleColor, new Grid(x, y + 1));
+    screen.write("*  The RogueLike Game  *", titleColor, new Grid(x, y + 2));
+    screen.write(" *                    *", titleColor, new Grid(x, y + 3));
+    screen.write("  ********************", titleColor, new Grid(x, y + 4));
     screen.write("   (Press Space Key)", 'Silver', new Grid(x, y + 6));
   }
 }
@@ -81,7 +81,7 @@ class MainScene implements Scene {
 
   MainScene()
       : _hero = new Actor('@', 'olive') {
-    final List<String> terrain_lines = [
+    final List<String> terrainLines = [
         '##############################',
         '#..................##.....####',
         '#.######..########.##........#',
@@ -90,33 +90,41 @@ class MainScene implements Scene {
         '#.#...#.....#....#...........#',
         '##############################',
         ];
-    Stage.current_stage = buildMap(terrain_lines);
-    Stage.current_stage.putActor(_hero, const Coordinate(3, 3));
+    Stage.currentStage = buildMap(terrainLines);
+    Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
+  // TODO TileにonStandEventプロパティを追加
+  // TODO タイルにキャラクターが載った時に実行する。
+  // TODO イベントはまずは引数なしで。
+  // TODO デフォルトは何もしない。
+  // TODO とりあえずprintするイベントを作成
+  // TODO 次にメッセージボードを作成
+  // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
+  // TODO はいの場合にレベル移動を実行
   // TODO levels: 各階のマップ定義、構築
   // TODO レベル移動処理(座標はそのままで、current_stageを変更する。
-  Stage buildMap(List<String> terrain_lines) {
-    Size stage_size = new Size(terrain_lines[0].length, terrain_lines.length);
-    Stage stage = new Stage(stage_size);
+  Stage buildMap(List<String> terrainLines) {
+    Size stageSize = new Size(terrainLines[0].length, terrainLines.length);
+    Stage stage = new Stage(stageSize);
     for (Coordinate pos in stage.coordinates) {
-      stage.setTerrain(terrain_lines[pos.y][pos.x], pos);
+      stage.setTerrain(terrainLines[pos.y][pos.x], pos);
     }
     return stage;
   }
 
   void keyDown(int key) {
     if (_dirs.containsKey(key) == false) return;
-    Coordinate current = Stage.current_stage.findActor(_hero);
+    Coordinate current = Stage.currentStage.findActor(_hero);
     Coordinate to = current + _dirs[key];
-    if (Stage.current_stage.movable(to) == false) return;
-    Stage.current_stage
+    if (Stage.currentStage.movable(to) == false) return;
+    Stage.currentStage
         ..pickupActor(current)
         ..putActor(_hero, to);
   }
 
   void render(CanvasScreen screen) {
     screen.clear();
-    Stage.current_stage.render(screen, const Coordinate(2, 2));
+    Stage.currentStage.render(screen, const Coordinate(2, 2));
   }
 }
 

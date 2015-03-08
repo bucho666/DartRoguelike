@@ -42,8 +42,8 @@ class Array2D<T> {
 /// 各種マップ(地形、キャラクター等)のファサードクラス
 class Stage {
   static Stage _current_stage;
-  static Stage get current_stage => _current_stage;
-  static set current_stage(Stage new_stage) => _current_stage = new_stage;
+  static Stage get currentStage => _current_stage;
+  static set currentStage(Stage newStage) => _current_stage = newStage;
   final Array2D<Terrain> _terrain;
   final Array2D<Actor> _actor;
 
@@ -112,7 +112,7 @@ class Terrain extends Tile {
 /// 地形テーブル
 class TerrainTable {
   static final Map<String, Terrain> _tabel = <String, Terrain> {
-    '#': const Terrain.Block('#', 'Silver'),
+    '#': const Terrain.Block('#', 'Gray'),
     '.': const Terrain('.', 'Silver'),
   };
 
