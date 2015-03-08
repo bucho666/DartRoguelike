@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:html';
 
 import 'canvas_screen.dart';
@@ -34,37 +35,57 @@ class Main {
   }
 }
 
-/// シーンクラス
-abstract class Scene {
-  static Scene active_scene;
-  /// 入力処理
-  void keyDown(int key);
-  /// 描画処理
-  void render(CanvasScreen screen);
+/// メインシーン
+class MainScene extends Scene {
+  MainScene() : super() {
+    addWindow(new StageWindow(new Grid(1, 1)));
+  }
 }
 
-/// タイトルシーン
-class TitleScene implements Scene {
-  void keyDown(int key) {
-    if (KeyCode.SPACE != key) return;
-    Scene.active_scene = new MainScene();
-  }
+/// メッセージウィンドウ
+class MessageWindow extends Window {
+  String _message;
+  MessageWindow(String this._message, Coordinate position)
+      : super(position);
 
+  void keyDown(int key) {
+    if (key == KeyCode.SPACE) {
+      Scene.activeScene.popWindow();
+    }
+  }
+  void render(CanvasScreen screen) {
+    screen.write(_message, 'Yellow', _position);
+  }
+}
+
+/// シーンクラス
+class Scene {
+  static Scene activeScene;
+  final Queue<Window> _windows;
+  Scene() : _windows = new Queue<Window>();
+  /// Window追加
+  void addWindow(Window window) {
+    _windows.addLast(window);
+  }
+  /// 入力処理
+  void keyDown(int key) {
+    _windows.last.keyDown(key);
+  }
+  /// Windowを一つ削除
+  void popWindow() {
+    _windows.removeLast();
+  }
+  /// 描画処理
   void render(CanvasScreen screen) {
     screen.clear();
-    int x = 28, y = 8;
-    String titleColor = 'Yellow';
-    screen.write("  ********************", titleColor, new Grid(x, y));
-    screen.write(" *                    *", titleColor, new Grid(x, y + 1));
-    screen.write("*  The RogueLike Game  *", titleColor, new Grid(x, y + 2));
-    screen.write(" *                    *", titleColor, new Grid(x, y + 3));
-    screen.write("  ********************", titleColor, new Grid(x, y + 4));
-    screen.write("   (Press Space Key)", 'Silver', new Grid(x, y + 6));
+    for (Window window in _windows) {
+      window.render(screen);
+    }
   }
 }
 
-/// メインシーン
-class MainScene implements Scene {
+/// ステージウィンドウ
+class StageWindow extends Window {
   static final Map<int, Coordinate> _dirs = {
     KeyCode.H: Direction.W,
     KeyCode.J: Direction.S,
@@ -76,20 +97,12 @@ class MainScene implements Scene {
     KeyCode.N: Direction.SE,
   };
 
-  Coordinate _pos;
   final Actor _hero;
 
-  MainScene()
-      : _hero = new Actor('@', 'olive') {
-    final List<String> terrainLines = [
-        '##############################',
-        '#..................##.....####',
-        '#.######..########.##........#',
-        '#.#...###.###....#.##.....#..#',
-        '#.....#.....#....#.#########.#',
-        '#.#...#.....#....#...........#',
-        '##############################',
-        ];
+  StageWindow(Coordinate position)
+      : super(position),
+        _hero = new Actor('@', 'olive') {
+    final List<String> terrainLines = ['##############################', '#..................##.....####', '#.######..########.##........#', '#.#...###.###....#.##.....#..#', '#.....#.....#....#.#########.#', '#.#...#.....#....#...........#', '##############################',];
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
@@ -108,6 +121,11 @@ class MainScene implements Scene {
   }
 
   void keyDown(int key) {
+    // TODO Debug
+    if (key == KeyCode.SPACE) {
+      Scene.activeScene.addWindow(new MessageWindow("test message", new Grid(5, 5)));
+      return;
+    }
     if (_dirs.containsKey(key) == false) return;
     Coordinate current = Stage.currentStage.findActor(_hero);
     Coordinate to = current + _dirs[key];
@@ -118,8 +136,34 @@ class MainScene implements Scene {
   }
 
   void render(CanvasScreen screen) {
-    screen.clear();
     Stage.currentStage.render(screen, const Coordinate(2, 2));
+  }
+}
+
+/// タイトルシーン
+class TitleScene extends Scene {
+  TitleScene() : super() {
+    addWindow(new TitleWindow(new Grid(28, 8)));
+  }
+}
+
+/// タイトルウィンドウ
+class TitleWindow extends Window {
+  TitleWindow(Coordinate position) : super(position);
+
+  void keyDown(int key) {
+    if (KeyCode.SPACE != key) return;
+    Scene.activeScene = new MainScene();
+  }
+
+  void render(CanvasScreen screen) {
+    String titleColor = 'Yellow';
+    screen.write("  ********************", titleColor, _position);
+    screen.write(" *                    *", titleColor, _position + new Grid(0, 1));
+    screen.write("*  The RogueLike Game  *", titleColor, _position + new Grid(0, 2));
+    screen.write(" *                    *", titleColor, _position + new Grid(0, 3));
+    screen.write("  ********************", titleColor, _position + new Grid(0, 4));
+    screen.write("   (Press Space Key)", 'Silver', _position + new Grid(0, 6));
   }
 }
 
@@ -128,14 +172,24 @@ class WalkDemo implements Game {
   final CanvasScreen _screen;
 
   WalkDemo(this._screen) {
-    Scene.active_scene = new TitleScene();
+    Scene.activeScene = new TitleScene();
   }
 
   void keyDown(int key) {
-    Scene.active_scene.keyDown(key);
+    Scene.activeScene.keyDown(key);
   }
 
   void render() {
-    Scene.active_scene.render(_screen);
+    Scene.activeScene.render(_screen);
   }
+}
+
+/// ウィンドウクラス
+abstract class Window {
+  Coordinate _position;
+  Window(Coordinate this._position);
+  /// 入力処理
+  void keyDown(int key);
+  /// 描画処理
+  void render(CanvasScreen screen);
 }
