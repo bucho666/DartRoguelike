@@ -25,9 +25,9 @@ class Main {
   }
 
   static CanvasScreen _build_screen() {
-    Grid.size = new Size(10, 20);
+    Grid.size = new Size(12, 20);
     Size screenSize = new Size(80, 24);
-    Font font = new Font("20px 'Courier New'");
+    Font font = new Font("Courier New", 20);
     String backgroundColor = "black";
     CanvasScreen screen = new CanvasScreen(_build_canvas(), screenSize, font, backgroundColor);
     screen.initialize();
@@ -102,11 +102,17 @@ class StageWindow extends Window {
   StageWindow(Coordinate position)
       : super(position),
         _hero = new Actor('@', 'olive') {
-    final List<String> terrainLines = ['##############################', '#..................##.....####', '#.######..########.##........#', '#.#...###.###....#.##.....#..#', '#.....#.....#....#.#########.#', '#.#...#.....#....#...........#', '##############################',];
+    final List<String> terrainLines = [
+       '##############################',
+       '#..................##.....####',
+       '#.######..########.##........#',
+       '#.#...###.###....#.##.....#..#',
+       '#.....#.....#....#.#########.#',
+       '#.#...#.....#....#...........#',
+       '##############################',];
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
-  // TODO 次にメッセージボードを作成
   // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
   // TODO はいの場合にレベル移動を実行
   // TODO levels: 各階のマップ定義、構築
@@ -121,9 +127,8 @@ class StageWindow extends Window {
   }
 
   void keyDown(int key) {
-    // TODO Debug
     if (key == KeyCode.SPACE) {
-      Scene.activeScene.addWindow(new MessageWindow("test message", new Grid(5, 5)));
+      Scene.activeScene.addWindow(new MessageWindow("*** test message ***", new Grid(5, 5)));
       return;
     }
     if (_dirs.containsKey(key) == false) return;

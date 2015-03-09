@@ -11,18 +11,19 @@ class CanvasScreen {
   final String _backgroundColor;
 
   CanvasScreen(CanvasElement canvas, Size size, this._font, this._backgroundColor)
-      : _context = canvas.context2D,
-        _size = new Size(Grid.width * size.width, Grid.height * size.height) {
+      : _context = canvas.context2D
+      , _size = new Size(Grid.width * size.width, Grid.height * size.height) {
     canvas
         ..width = _size.width
         ..height = _size.height;
+    _context
+      ..fillStyle = _backgroundColor
+      ..textBaseline = 'top';
   }
 
   void clear() {
     _context
-        ..fillStyle = _backgroundColor
-        ..fillRect(0, 0, _size.width, _size.height);
-
+        ..clearRect(0, 0, _size.width, _size.height);
   }
 
   void initialize() {
@@ -31,16 +32,22 @@ class CanvasScreen {
   }
 
   void write(String text, String color, Coordinate pos) {
+    int width = _context.measureText(text).width.toInt();
+    int height = _font.size;
     _context
+        ..clearRect(pos.x, pos.y, width, height)
         ..fillStyle = color
-        ..fillText(text, pos.x, pos.y + 1);
+        ..fillText(text, pos.x, pos.y);
   }
 }
 
 /// フォントクラス
 class Font {
+  final int size;
   final String family;
-  const Font(this.family);
+  Font(String name, int font_size)
+      : family = "${font_size}px ${name}"
+      , this.size = font_size;
 }
 
 
