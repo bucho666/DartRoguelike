@@ -54,7 +54,7 @@ class MessageWindow extends Window {
     }
   }
   void render(CanvasScreen screen) {
-    screen.write(_message, 'Yellow', _position);
+    screen.write(_message, _position, 'Yellow');
   }
 }
 
@@ -163,12 +163,12 @@ class TitleWindow extends Window {
 
   void render(CanvasScreen screen) {
     String titleColor = 'Yellow';
-    screen.write("  ********************", titleColor, _position);
-    screen.write(" *                    *", titleColor, _position + new Grid(0, 1));
-    screen.write("*  The RogueLike Game  *", titleColor, _position + new Grid(0, 2));
-    screen.write(" *                    *", titleColor, _position + new Grid(0, 3));
-    screen.write("  ********************", titleColor, _position + new Grid(0, 4));
-    screen.write("   (Press Space Key)", 'Silver', _position + new Grid(0, 6));
+    screen.write("  ********************", _position, titleColor);
+    screen.write(" *                    *", _position + new Grid(0, 1));
+    screen.write("*  The RogueLike Game  *", _position + new Grid(0, 2));
+    screen.write(" *                    *",  _position + new Grid(0, 3));
+    screen.write("  ********************", _position + new Grid(0, 4));
+    screen.write("   (Press Space Key)", _position + new Grid(0, 6), 'Silver');
   }
 }
 

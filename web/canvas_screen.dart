@@ -31,12 +31,12 @@ class CanvasScreen {
     _context.font = _font.family;
   }
 
-  void write(String text, String color, Coordinate pos) {
+  void write(String text, Coordinate pos, [String color]) {
     int width = _context.measureText(text).width.toInt();
     int height = _font.size;
+    if (color != null) _context.fillStyle = color;
     _context
         ..clearRect(pos.x, pos.y, width, height)
-        ..fillStyle = color
         ..fillText(text, pos.x, pos.y);
   }
 }
@@ -49,6 +49,3 @@ class Font {
       : family = "${font_size}px ${name}"
       , this.size = font_size;
 }
-
-
-

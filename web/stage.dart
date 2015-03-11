@@ -164,6 +164,6 @@ class Tile {
   final String _glyph, _color;
   const Tile(this._glyph, this._color);
   void render(CanvasScreen screen, Coordinate coordinate) {
-    screen.write(this._glyph, this._color, coordinate);
+    screen.write(this._glyph, coordinate, this._color);
   }
 }
