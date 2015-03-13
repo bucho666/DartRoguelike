@@ -10,6 +10,36 @@ void main() {
   Main.run();
 }
 
+class ColorString implements Renderable {
+  final String _string;
+  final String _color;
+  ColorString(this._string, [this._color]);
+  void render(CanvasScreen screen, Coordinate pos) {
+    screen.write(_string, pos, _color);
+  }
+}
+
+class ColorText {
+  final List<Renderable> _lines;
+  ColorText() : _lines = new List<Renderable>();
+
+  void newLine() {
+    _lines.add(const NullRenderbleObject());
+  }
+
+  void render(CanvasScreen screen, Coordinate pos) {
+    Coordinate current = pos;
+    for (Renderable line in _lines) {
+      line.render(screen, current);
+      current = current + Direction.DOWN;
+    }
+  }
+
+  void write(String string, [String color]) {
+    _lines.add(new ColorString(string, color));
+  }
+}
+
 /// mainクラス
 /// システムを初期化し、ゲームを実行する。
 class Main {
@@ -56,6 +86,20 @@ class MessageWindow extends Window {
   void render(CanvasScreen screen) {
     screen.write(_message, _position, 'Yellow');
   }
+}
+
+class NullRenderbleObject implements Renderable {
+  const NullRenderbleObject();
+  void render(CanvasScreen screen, Coordinate pos){}
+}
+
+/// タイトルウィンドウ
+/// TODO TextBoxを作成
+/// ..write("string", color)
+/// ..write("string")
+/// TODO TextWindowを作成
+abstract class Renderable {
+  void render(CanvasScreen screen, Coordinate pos);
 }
 
 /// シーンクラス
@@ -113,6 +157,8 @@ class StageWindow extends Window {
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
+  // TODO ColorTextクラスを実装
+  // TODO Windowをクラス化
   // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
   // TODO はいの場合にレベル移動を実行
   // TODO levels: 各階のマップ定義、構築
@@ -152,9 +198,20 @@ class TitleScene extends Scene {
   }
 }
 
-/// タイトルウィンドウ
 class TitleWindow extends Window {
-  TitleWindow(Coordinate position) : super(position);
+  final ColorText _text;
+  TitleWindow(Coordinate position)
+  : super(position)
+  , _text = new ColorText() {
+    _text
+      ..write("  ********************", "Yellow")
+      ..write(" *                    *")
+      ..write("*  The RogueLike Game  *")
+      ..write(" *                    *")
+      ..write("  ********************")
+      ..newLine()
+      ..write("   (Press Space Key)", 'Silver');
+  }
 
   void keyDown(int key) {
     if (KeyCode.SPACE != key) return;
@@ -162,13 +219,7 @@ class TitleWindow extends Window {
   }
 
   void render(CanvasScreen screen) {
-    String titleColor = 'Yellow';
-    screen.write("  ********************", _position, titleColor);
-    screen.write(" *                    *", _position + new Grid(0, 1));
-    screen.write("*  The RogueLike Game  *", _position + new Grid(0, 2));
-    screen.write(" *                    *",  _position + new Grid(0, 3));
-    screen.write("  ********************", _position + new Grid(0, 4));
-    screen.write("   (Press Space Key)", _position + new Grid(0, 6), 'Silver');
+    _text.render(screen, _position);
   }
 }
 

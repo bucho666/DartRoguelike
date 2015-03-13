@@ -24,6 +24,10 @@ class Direction {
   static const Coordinate NW = const Coordinate(-1, -1);
   static const Coordinate SE = const Coordinate(1, 1);
   static const Coordinate SW = const Coordinate(-1, 1);
+  static const Coordinate UP = const Coordinate(0, -1);
+  static const Coordinate DOWN = const Coordinate(0, 1);
+  static const Coordinate RIGHT = const Coordinate(1, 0);
+  static const Coordinate LEFT = const Coordinate(-1, 0);
 }
 
 class Grid extends Coordinate {
