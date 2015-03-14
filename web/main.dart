@@ -62,7 +62,7 @@ class TitleScene extends Scene {
 /// タイトルウィンドウ
 class TitleWindow extends MessageWindow {
   TitleWindow(Coordinate position)
-  : super(position) {
+  : super(position, 'Green') {
     this
       ..write("  ********************", "Yellow")
       ..write(" *                    *")
@@ -82,7 +82,8 @@ class TitleWindow extends MessageWindow {
 /// メッセージウィンドウ
 class MessageWindow extends Window {
   ColorText _messages;
-  MessageWindow(Coordinate position)
+  final String _frameColor;
+  MessageWindow(Coordinate position, [this._frameColor="White"])
       : super(position)
       , _messages = new ColorText();
   /// 空行追加
@@ -100,17 +101,35 @@ class MessageWindow extends Window {
   }
   /// 描画処理
   void render(CanvasScreen screen) {
-    // TODO 枠のカラーテキストを作成して描画する。
-    // TODO 作成は事前に？
-    ColorText _frame = new ColorText(); // TODO WindowFrameクラスを作成する
-    Size size = _messages.size;
-    _frame.write('*${"-" * size.width}*');
-    for (int y = 0; y < size.height; y++) {
-      _frame.write('|${" " * size.width}|');
-    }
-    _frame.write('*${"-" * size.width}*');
-    _frame.render(screen, _position + Direction.NW);
+    Frame frame = new Frame(_messages.size, _frameColor);
+    frame.render(screen, _position + Direction.upperLeft);
     _messages.render(screen, _position);
+  }
+}
+
+class Frame implements Renderable {
+  ColorText _frame;
+  String _color;
+  Size _size;
+  String _corner;
+  Frame(this._size, [this._color = 'White', this._corner = '*']): _frame = new ColorText();
+  set size(Size new_size) => _size = new_size;
+  void render(CanvasScreen screen, Coordinate position) {
+    screen.color = _color;
+    _drawHorizontalLine();
+    for (int y = 0; y < _size.height; y++) {
+      _drawVerticalLine();
+    }
+    _drawHorizontalLine();
+    _frame.render(screen, position);
+  }
+  /// 横線作成
+  void _drawHorizontalLine() {
+    _frame.write('$_corner${"-" * _size.width}$_corner');
+  }
+  /// 縦線作成
+  void _drawVerticalLine() {
+    _frame.write('|${" " * _size.width}|');
   }
 }
 
@@ -152,7 +171,7 @@ class ColorText {
     Coordinate current = pos;
     for (Renderable line in _lines) {
       line.render(screen, current);
-      current = current + Direction.DOWN;
+      current = current + Direction.lower;
     }
   }
   /// 行追加
@@ -210,14 +229,14 @@ class Scene {
 /// ステージウィンドウ
 class StageWindow extends Window {
   static final Map<int, Coordinate> _dirs = {
-    KeyCode.H: Direction.W,
-    KeyCode.J: Direction.S,
-    KeyCode.K: Direction.N,
-    KeyCode.L: Direction.E,
-    KeyCode.Y: Direction.NW,
-    KeyCode.U: Direction.NE,
-    KeyCode.B: Direction.SW,
-    KeyCode.N: Direction.SE,
+    KeyCode.H: Direction.west,
+    KeyCode.J: Direction.south,
+    KeyCode.K: Direction.north,
+    KeyCode.L: Direction.east,
+    KeyCode.Y: Direction.northWest,
+    KeyCode.U: Direction.northEast,
+    KeyCode.B: Direction.southWest,
+    KeyCode.N: Direction.southEast,
   };
   final Actor _hero;
   StageWindow(Coordinate position)
@@ -234,7 +253,6 @@ class StageWindow extends Window {
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
-  // TODO TextBox 描画時に枠を出力する。
   // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
   // TODO はいの場合にレベル移動を実行
   // TODO levels: 各階のマップ定義、構築

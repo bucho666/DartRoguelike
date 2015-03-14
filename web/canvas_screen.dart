@@ -31,6 +31,8 @@ class CanvasScreen {
     _context.font = _font.family;
   }
 
+  set color(String color) => _context.fillStyle = color;
+
   void write(String text, Coordinate pos, [String color]) {
     int width = _context.measureText(text).width.toInt();
     int height = _font.size;
