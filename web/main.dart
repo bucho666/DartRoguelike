@@ -100,6 +100,16 @@ class MessageWindow extends Window {
   }
   /// 描画処理
   void render(CanvasScreen screen) {
+    // TODO 枠のカラーテキストを作成して描画する。
+    // TODO 作成は事前に？
+    ColorText _frame = new ColorText(); // TODO WindowFrameクラスを作成する
+    Size size = _messages.size;
+    _frame.write('*${"-" * size.width}*');
+    for (int y = 0; y < size.height; y++) {
+      _frame.write('|${" " * size.width}|');
+    }
+    _frame.write('*${"-" * size.width}*');
+    _frame.render(screen, _position + Direction.NW);
     _messages.render(screen, _position);
   }
 }
@@ -127,7 +137,12 @@ class ColorString implements Renderable {
 /// テキスト
 class ColorText {
   final List<Renderable> _lines;
-  ColorText() : _lines = new List<Renderable>();
+  int _width;
+  ColorText()
+  : _lines = new List<Renderable>()
+  , _width = 0;
+  /// サイズ
+  Size get size => new Size(_width, _lines.length);
   /// 空行追加
   void newLine() {
     _lines.add(const NullRenderbleObject());
@@ -143,6 +158,8 @@ class ColorText {
   /// 行追加
   void write(String string, [String color]) {
     _lines.add(new ColorString(string, color));
+    if (_width >= string.length) return;
+    _width = string.length;
   }
 }
 
@@ -217,6 +234,7 @@ class StageWindow extends Window {
     Stage.currentStage = buildMap(terrainLines);
     Stage.currentStage.putActor(_hero, const Coordinate(3, 3));
   }
+  // TODO TextBox 描画時に枠を出力する。
   // TODO 次にComformボード(はい、いいえ)を選択するメッセージボードを作成
   // TODO はいの場合にレベル移動を実行
   // TODO levels: 各階のマップ定義、構築
@@ -234,6 +252,8 @@ class StageWindow extends Window {
     if (key == KeyCode.SPACE) {
       MessageWindow message_window = new MessageWindow(new Grid(5, 5));
       message_window.write("*** Test Message ***", 'Yellow');
+      message_window.write("   multi line test  ");
+      message_window.write("*                   ");
       Scene.activeScene.addWindow(message_window);
       return;
     }
