@@ -150,7 +150,7 @@ class Terrain extends Tile {
 /// 地形テーブル
 class TerrainTable {
   static final Map<String, Terrain> _tabel = <String, Terrain>{
-    '#': const Terrain.Block('#', 'Gray'),
+    '#': const Terrain.Block('#', 'Silver'),
     '.': const Terrain('.', 'Silver'),
   };
 
